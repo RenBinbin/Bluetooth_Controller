@@ -1,0 +1,20 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.canny.renbinbin1.bluetooth_controller.module.monitor.MonitorFragment">
+
+    <shanyao.tabpagerindictor.TabPageIndicator
+        android:id="@+id/indicator_Monitor"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/monitor_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </android.support.v4.view.ViewPager>
+
+</LinearLayout>
