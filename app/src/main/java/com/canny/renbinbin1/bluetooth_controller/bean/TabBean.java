@@ -9,8 +9,6 @@ public class TabBean {
     private int icon;
     //0 所有都显示  1 显示图片  2 文字
     private int tabType;
-
-
     private int iconChooseResId;
     private int iconNormalResId;
 
@@ -39,14 +37,6 @@ public class TabBean {
         this.tabType = tabType;
         this.iconChooseResId = iconChooseResId;
         this.iconNormalResId = iconNormalResId;
-        this.index = index;
-    }
-
-    public TabBean(String title, int tabType, int index) {
-        this.title = title;
-        this.icon = icon;
-        this.tabType = tabType;
-        this.index = index;
     }
 
     public String getTitle() {
@@ -62,11 +52,6 @@ public class TabBean {
     }
 
     public void setIcon(int icon) {
-        this.icon = icon;
-    }
-
-    public TabBean(String title, int icon) {
-        this.title = title;
         this.icon = icon;
     }
 

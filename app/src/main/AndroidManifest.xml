@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.canny.renbinbin1.bluetooth_controller">
 
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -16,7 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".module.parameters.debug.DebugActivity"></activity>
+        <activity android:name=".module.parameters.debug.DebugActivity" />
+        <activity android:name=".bluetooth.DeviceListActivity" />
+        <activity android:name=".bluetooth.DeviceActivity"></activity>
     </application>
 
 </manifest>

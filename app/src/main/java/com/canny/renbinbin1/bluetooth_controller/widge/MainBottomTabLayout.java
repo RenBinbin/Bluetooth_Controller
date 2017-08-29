@@ -137,7 +137,6 @@ public class MainBottomTabLayout extends LinearLayout {
      * @param tabBeen
      */
     public void initTabView(ArrayList<TabBean> tabBeen) {
-
         int index = 0;
         for (int i = 0; i < tabBeen.size(); i++) {
             if (tabBeen.get(i).getTabType() != 1) {
@@ -179,7 +178,6 @@ public class MainBottomTabLayout extends LinearLayout {
     }
 
     private OnClickListener otherClick;
-
     public void setOtherClick(OnClickListener otherClick) {
         this.otherClick = otherClick;
         if(otherClick != null){

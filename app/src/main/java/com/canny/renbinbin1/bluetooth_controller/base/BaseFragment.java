@@ -3,7 +3,6 @@ package com.canny.renbinbin1.bluetooth_controller.base;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,6 @@ public abstract class BaseFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initData();
         initView(view);
-        Log.e("BaseFragment","initView执行了");
     }
 
 

@@ -41,7 +41,7 @@ public class DebugActivity extends BaseActivity {
         atapter.setOnItemClickLitener(new DebugDetailAtapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
-                Toast.makeText(DebugActivity.this,"点击了",Toast.LENGTH_LONG);
+                Toast.makeText(DebugActivity.this,"点击了",Toast.LENGTH_LONG).show();
             }
         });
     }

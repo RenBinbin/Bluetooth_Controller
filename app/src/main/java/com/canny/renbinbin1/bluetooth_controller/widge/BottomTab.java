@@ -14,8 +14,6 @@ import android.widget.TextView;
 
 import com.canny.renbinbin1.bluetooth_controller.R;
 import com.canny.renbinbin1.bluetooth_controller.bean.TabBean;
-
-
 /**
  * 底部导航【图标+文字】
  */
@@ -28,7 +26,6 @@ public class BottomTab extends LinearLayout {
 
     TextView tvTitle;
     ImageView ivIcon;
-
     TabBean mTabBean;
 
     public BottomTab(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -51,7 +48,6 @@ public class BottomTab extends LinearLayout {
 
     //初始化控件，这里会创建两个控件【图标+文字】，并且用一个LinearLayout包裹起来
     private void init() {
-
         LinearLayout linearLayout = new LinearLayout(getContext());
         LayoutParams lllayoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -71,7 +67,6 @@ public class BottomTab extends LinearLayout {
             //图标的布局参数
 
             if(mTabBean.getTabType() == 1){
-
                 int imageSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40,
                         getContext().getResources().getDisplayMetrics());
                 LayoutParams iconLayoutParams = new LayoutParams(imageSize, imageSize);
@@ -118,7 +113,6 @@ public class BottomTab extends LinearLayout {
     }
 
     public class Selector{
-
         public StateListDrawable newSelector(Drawable normal,Drawable choose){
             StateListDrawable listDrawable = new StateListDrawable();
             listDrawable.addState(new int[]{android.R.attr.state_pressed,
