@@ -35,4 +35,13 @@ public class BlueToothBean {
     public void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "BlueToothBean{" +
+                "id=" + id +
+                ", message='" + message + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

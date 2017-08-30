@@ -1,6 +1,5 @@
 package com.canny.renbinbin1.bluetooth_controller;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -13,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.canny.renbinbin1.bluetooth_controller.adapter.MainViewPagerAdapter;
 import com.canny.renbinbin1.bluetooth_controller.base.BaseActivity;
@@ -34,6 +34,7 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
 
     private static final int REQUEST_CONNECT_DEVICE=1;
+    private static final int REQUEST_ENABLE_BT=2;
     private BluetoothChatService mChatService;
     private DatabaseDao databaseDao;
     private BluetoothAdapter mBluetoothAdapter;
@@ -74,13 +75,26 @@ public class MainActivity extends BaseActivity {
 
         databaseDao = new DatabaseDao(this);
         mBluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         if(mChatService==null){
-            mChatService=new BluetoothChatService(this,mHandler);
+            setupChat();
+        }
+    }
+
+    private void setupChat() {
+        mChatService=new BluetoothChatService(this,mHandler);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mChatService!=null){
+            mChatService.stop();
         }
     }
 
@@ -89,58 +103,65 @@ public class MainActivity extends BaseActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what){
-                case Constants.MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1){
-                        case BluetoothChatService.STATE_CONNECTED:
-                            setStatus(getString(R.string.title_connected_to,mConnectedDeviceName));
-                            break;
-                        case BluetoothChatService.STATE_CONNECTING:
-                            setStatus(R.string.title_connecting);
-                            break;
-                        case BluetoothChatService.STATE_NONE:
-                            setStatus(R.string.title_not_connected);
-                            break;
-                    }
-                    break;
+//                case Constants.MESSAGE_STATE_CHANGE:
+//                    switch (msg.arg1){
+//                        case BluetoothChatService.STATE_CONNECTED:
+//                            setStatus(getString(R.string.title_connected_to,mConnectedDeviceName));
+//                            break;
+//                        case BluetoothChatService.STATE_CONNECTING:
+//                            setStatus(R.string.title_connecting);
+//                            break;
+//                        case BluetoothChatService.STATE_NONE:
+//                            setStatus(R.string.title_not_connected);
+//                            break;
+//                    }
+//                    break;
                 case Constants.MESSAGE_READ:
                      byte[] readBuf= (byte[]) msg.obj;
                     String readMessage=byteToHexString(readBuf);
                     Log.e("Message01", readMessage);
-//                    long l=databaseDao.insert(readMessage);
-//                    if(l>0){
-//                        Toast.makeText(MainActivity.this,"存储成功",Toast.LENGTH_LONG).show();
-//                    }
+                    long l=databaseDao.insert(readMessage);
+                    if(l>0){
+                        Toast.makeText(MainActivity.this,"存储成功",Toast.LENGTH_LONG).show();
+                    }
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     mConnectedDeviceName=msg.getData().getString(Constants.DEVICE_NAME);
+                    if(this!=null){
+                        Toast.makeText(MainActivity.this,"Connected to"+mConnectedDeviceName,Toast.LENGTH_LONG).show();
+                    }
+                    break;
+                case Constants.MESSAGE_TOAST:
+                    if (this!=null){
+                        Toast.makeText(MainActivity.this,msg.getData().getString(Constants.TOAST),Toast.LENGTH_LONG).show();
+                    }
                     break;
             }
         }
     };
 
-    private void setStatus(int title_connecting) {
-        if (null == this) {
-            return;
-        }
-        final ActionBar actionBar = getActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(title_connecting);
-    }
-
-    //更新操作栏的状态
-    private void setStatus(CharSequence subTitle) {
-        if (null == this) {
-            return;
-        }
-        final ActionBar actionBar = getActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(subTitle);
-    }
-
+//    private void setStatus(int title_connecting) {
+//        if (null == this) {
+//            return;
+//        }
+//        final ActionBar actionBar = getActionBar();
+//        if (null == actionBar) {
+//            return;
+//        }
+//        actionBar.setSubtitle(title_connecting);
+//    }
+//
+//    //更新操作栏的状态
+//    private void setStatus(CharSequence subTitle) {
+//        if (null == this) {
+//            return;
+//        }
+//        final ActionBar actionBar = getActionBar();
+//        if (null == actionBar) {
+//            return;
+//        }
+//        actionBar.setSubtitle(subTitle);
+//    }
 
     private static String byteToHexString(byte[] bytes) {
         String result="";
@@ -178,8 +199,13 @@ public class MainActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case REQUEST_CONNECT_DEVICE:
-                if(requestCode== Activity.RESULT_OK){
+                if(resultCode== Activity.RESULT_OK){
                     connectDevice(data,true);
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                if(resultCode==Activity.RESULT_OK){
+                    setupChat();
                 }
                 break;
         }
@@ -191,10 +217,12 @@ public class MainActivity extends BaseActivity {
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         mChatService.connect(device, secure);
+
     }
 
 
     @Override
     protected void getData() {
+
     }
 }

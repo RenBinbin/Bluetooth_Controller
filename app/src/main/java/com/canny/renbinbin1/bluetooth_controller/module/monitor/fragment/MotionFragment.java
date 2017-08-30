@@ -1,15 +1,14 @@
 package com.canny.renbinbin1.bluetooth_controller.module.monitor.fragment;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.canny.renbinbin1.bluetooth_controller.R;
 import com.canny.renbinbin1.bluetooth_controller.base.BaseFragment;
 import com.canny.renbinbin1.bluetooth_controller.bluetooth.BlueToothBean;
+import com.canny.renbinbin1.bluetooth_controller.bluetooth.DatabaseDao;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +27,9 @@ public class MotionFragment extends BaseFragment {
     @BindView(R.id.msg_motion)
     TextView msgMotion;
 
+    private DatabaseDao databaseDao;
+    private ArrayList<BlueToothBean> mBlueToothBean = new ArrayList<>();
+
     public static MotionFragment newInstance() {
         MotionFragment fragment = new MotionFragment();
         return fragment;
@@ -41,15 +43,15 @@ public class MotionFragment extends BaseFragment {
     @Override
     protected void initView(View view) {
         ButterKnife.bind(this, view);
-        EventBus.getDefault().register(this);
-    }
+        databaseDao = new DatabaseDao(getActivity());
 
+        ArrayList<BlueToothBean> blueList=databaseDao.query();
+        for (BlueToothBean bt:blueList){
+            modelMotion.setText(bt+"");
+            modelMotion.setTextSize(18);
+        }
+        blueList.clear();
 
-    @Subscribe
-    public void onEventMainThread(BlueToothBean motionBean) {
-        String msg=motionBean.getMessage();
-        modelMotion.setText(msg);
-        Log.e("MotionFragment",msg);
     }
 
     @Override
@@ -57,9 +59,15 @@ public class MotionFragment extends BaseFragment {
 
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
-    }
+//    @Subscribe
+//    public void onEventMainThread(EventUtils event) {
+//        ArrayList<BlueToothBean> list = databaseDao.query();
+//        if (list != null){
+//            beanArrayList.clear();
+//            for (BlueToothBean noteBookBean : list){
+//                beanArrayList.add(noteBookBean);
+//            }
+//        }
+//    }
+
 }

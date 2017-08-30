@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -28,13 +29,13 @@ public class DatabaseDao {
         bookBeanArrayList = new ArrayList<>();
         if (cursor != null){
             while (cursor.moveToNext()){
-                String id = cursor.getString(cursor.getColumnIndex("id"));
-                String name = cursor.getString(cursor.getColumnIndex("name"));
+//                String id = cursor.getString(cursor.getColumnIndex("id"));
+//                String name = cursor.getString(cursor.getColumnIndex("name"));
                 String message = cursor.getString(cursor.getColumnIndex("message"));
 
                 BlueToothBean blueToothBean = new BlueToothBean();
-                blueToothBean.setId(Integer.parseInt(id));
-                blueToothBean.setName(name);
+//                blueToothBean.setId(Integer.parseInt(id));
+//                blueToothBean.setName(name);
                 blueToothBean.setMessage(message);
                 bookBeanArrayList.add(blueToothBean);
             }
@@ -46,9 +47,13 @@ public class DatabaseDao {
     //插入
     public long insert(String message){
         ContentValues values = new ContentValues();
-        BlueToothBean blueToothBean=new BlueToothBean();
+//        BlueToothBean blueToothBean=new BlueToothBean();
 //        values.put("name",blueToothBean.getName());
-        values.put("message",blueToothBean.getMessage());
+        ArrayList<String> msg=new ArrayList<>();
+        msg.add(message);
+        Log.e("msg",msg+"" );
+        values.put("message", msg+"");
+
         return db.insert("bluetooth", null, values);
     }
     private static String byteToHexString(byte[] bytes) {
