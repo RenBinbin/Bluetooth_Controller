@@ -9,7 +9,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,7 +29,6 @@ public class BluetoothChatService {
     private  BluetoothAdapter mAdapter;
     private  Handler mHandler;
     private AcceptThread mSecureAcceptThread;
-    private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
@@ -53,13 +54,14 @@ public class BluetoothChatService {
     /**
      * 根据聊天连接的当前状态更新UI标题
      */
-    private synchronized void updateUserInterfaceTitle() {
-        mState = getState();
-        mNewState = mState;
-
-        // 将新状态赋予处理程序，使UI活动能够更新
-        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mNewState, -1).sendToTarget();
-    }
+//    private synchronized void updateUserInterfaceTitle() {
+//        mState = getState();
+//        Log.e("state",mNewState+""+mState+"" );
+//        mNewState = mState;
+//
+//        // 将新状态赋予处理程序，使UI活动能够更新
+//        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mNewState, -1).sendToTarget();
+//    }
 
     /**
      * Return the current connection state.
@@ -91,12 +93,9 @@ public class BluetoothChatService {
             mSecureAcceptThread = new AcceptThread(true);
             mSecureAcceptThread.start();
         }
-        if (mInsecureAcceptThread == null) {
-            mInsecureAcceptThread = new AcceptThread(false);
-            mInsecureAcceptThread.start();
-        }
+
         // Update UI title
-        updateUserInterfaceTitle();
+//        updateUserInterfaceTitle();
     }
 
     /**
@@ -125,7 +124,7 @@ public class BluetoothChatService {
         mConnectThread = new ConnectThread(device, secure);
         mConnectThread.start();
         // Update UI title
-        updateUserInterfaceTitle();
+//        updateUserInterfaceTitle();
     }
 
     /**
@@ -134,8 +133,7 @@ public class BluetoothChatService {
      * @param socket The BluetoothSocket on which the connection was made
      * @param device The BluetoothDevice that has been connected
      */
-    public synchronized void connected(BluetoothSocket socket, BluetoothDevice
-            device, final String socketType) {
+    public synchronized void connected(BluetoothSocket socket, BluetoothDevice device) {
 
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {
@@ -155,13 +153,9 @@ public class BluetoothChatService {
             mSecureAcceptThread.cancel();
             mSecureAcceptThread = null;
         }
-        if (mInsecureAcceptThread != null) {
-            mInsecureAcceptThread.cancel();
-            mInsecureAcceptThread = null;
-        }
 
         // Start the thread to manage the connection and perform transmissions
-        mConnectedThread = new ConnectedThread(socket, socketType);
+        mConnectedThread = new ConnectedThread(socket);
         mConnectedThread.start();
 
         // Send the name of the connected device back to the UI Activity
@@ -172,7 +166,7 @@ public class BluetoothChatService {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
         // Update UI title
-        updateUserInterfaceTitle();
+//        updateUserInterfaceTitle();
     }
 
     /**
@@ -195,13 +189,9 @@ public class BluetoothChatService {
             mSecureAcceptThread = null;
         }
 
-        if (mInsecureAcceptThread != null) {
-            mInsecureAcceptThread.cancel();
-            mInsecureAcceptThread = null;
-        }
         mState = STATE_NONE;
         // Update UI title
-        updateUserInterfaceTitle();
+//        updateUserInterfaceTitle();
     }
 
     /**
@@ -236,7 +226,7 @@ public class BluetoothChatService {
 
         mState = STATE_NONE;
         // Update UI title
-        updateUserInterfaceTitle();
+//        updateUserInterfaceTitle();
 
         // Start the service over to restart listening mode
         BluetoothChatService.this.start();
@@ -256,7 +246,7 @@ public class BluetoothChatService {
 
         mState = STATE_NONE;
         // Update UI title
-        updateUserInterfaceTitle();
+//        updateUserInterfaceTitle();
 
         // Start the service over to restart listening mode
         BluetoothChatService.this.start();
@@ -271,11 +261,9 @@ public class BluetoothChatService {
     private class AcceptThread extends Thread {
         // The local server socket
         private final BluetoothServerSocket mmServerSocket;
-        private String mSocketType;
 
         public AcceptThread(boolean secure) {
             BluetoothServerSocket tmp = null;
-            mSocketType =  "Secure" ;
 
             // Create a new listening server socket
             try {
@@ -292,7 +280,6 @@ public class BluetoothChatService {
         }
 
         public void run() {
-            setName("AcceptThread" + mSocketType);
             BluetoothSocket socket ;
 
             // Listen to the server socket if we're not connected
@@ -312,8 +299,7 @@ public class BluetoothChatService {
                             case STATE_LISTEN:
                             case STATE_CONNECTING:
                                 // Situation normal. Start the connected thread.
-                                connected(socket, socket.getRemoteDevice(),
-                                        mSocketType);
+                                connected(socket, socket.getRemoteDevice());
                                 break;
                             case STATE_NONE:
                             case STATE_CONNECTED:
@@ -344,14 +330,14 @@ public class BluetoothChatService {
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
-        private String mSocketType;
+//        private String mSocketType;
 
         public ConnectThread(BluetoothDevice device, boolean secure) {
             mmDevice = device;
             BluetoothSocket tmp = null;
-            mSocketType = secure ? "Secure" : "Insecure";
+//            mSocketType = secure ? "Secure" : "Insecure";
 
-            // 获得一个BluetoothSocket 与给定的蓝牙设备连接e
+            // 获得一个BluetoothSocket 与给定的蓝牙设备连接
             try {
                 if (secure) {
                     tmp = device.createRfcommSocketToServiceRecord(
@@ -366,7 +352,7 @@ public class BluetoothChatService {
         }
 
         public void run() {
-            setName("ConnectThread" + mSocketType);
+//            setName("ConnectThread" + mSocketType);
 
             // Always cancel discovery because it will slow down a connection
             mAdapter.cancelDiscovery();
@@ -392,7 +378,7 @@ public class BluetoothChatService {
             }
 
             // Start the connected thread
-            connected(mmSocket, mmDevice, mSocketType);
+            connected(mmSocket, mmDevice);
         }
 
         public void cancel() {
@@ -413,7 +399,7 @@ public class BluetoothChatService {
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
-        public ConnectedThread(BluetoothSocket socket, String socketType) {
+        public ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
@@ -431,14 +417,16 @@ public class BluetoothChatService {
         }
 
         public void run() {
-            byte[] buffer = new byte[24];
+            byte[] buffer = new byte[22];
             int bytes;
-
             // Keep listening to the InputStream while connected
-            while (mState == STATE_CONNECTED) {
+            while (!isInterrupted()) {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
+                    while (bytes<22){
+                        bytes+=mmInStream.read(buffer,bytes,22-bytes);
+                    }
                     // Send the obtained bytes to the UI Activity
                     mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
                 } catch (IOException e) {

@@ -90,14 +90,6 @@ public class MainActivity extends BaseActivity {
         mChatService=new BluetoothChatService(this,mHandler);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(mChatService!=null){
-            mChatService.stop();
-        }
-    }
-
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -120,10 +112,11 @@ public class MainActivity extends BaseActivity {
                      byte[] readBuf= (byte[]) msg.obj;
                     String readMessage=byteToHexString(readBuf);
                     Log.e("Message01", readMessage);
-                    long l=databaseDao.insert(readMessage);
-                    if(l>0){
-                        Toast.makeText(MainActivity.this,"存储成功",Toast.LENGTH_LONG).show();
-                    }
+                    databaseDao.insert(readMessage);
+//                    if(l>0){
+//                        Toast.makeText(MainActivity.this,"存储成功",Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     mConnectedDeviceName=msg.getData().getString(Constants.DEVICE_NAME);
@@ -188,8 +181,10 @@ public class MainActivity extends BaseActivity {
             case R.id.blue_action:
                 Intent intent=new Intent(this, DeviceListActivity.class);
                 startActivityForResult(intent,REQUEST_CONNECT_DEVICE);
-//                startActivity(intent);
                 break;
+//            case R.id.blue_stop:
+//                mChatService.stop();
+//                break;
         }
         return true;
     }
@@ -217,12 +212,18 @@ public class MainActivity extends BaseActivity {
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         mChatService.connect(device, secure);
-
     }
-
 
     @Override
     protected void getData() {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mChatService!=null){
+            mChatService.stop();
+        }
     }
 }

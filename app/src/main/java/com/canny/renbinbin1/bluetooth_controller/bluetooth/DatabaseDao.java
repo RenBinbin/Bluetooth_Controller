@@ -56,17 +56,6 @@ public class DatabaseDao {
 
         return db.insert("bluetooth", null, values);
     }
-    private static String byteToHexString(byte[] bytes) {
-        String result="";
-        for (int i = 0; i <bytes.length ; i++) {
-            String hexString=Integer.toHexString(bytes[i]&0xFF);
-            if(hexString.length()==1){
-                hexString='0'+hexString;
-            }
-            result+=hexString.toUpperCase();
-        }
-        return result;
-    }
 
     /**
      * 更新

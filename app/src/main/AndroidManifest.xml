@@ -21,7 +21,6 @@
         </activity>
         <activity android:name=".module.parameters.debug.DebugActivity" />
         <activity android:name=".bluetooth.DeviceListActivity" />
-        <activity android:name=".bluetooth.DeviceActivity"></activity>
     </application>
 
 </manifest>

@@ -47,7 +47,7 @@ public class MotionFragment extends BaseFragment {
 
         ArrayList<BlueToothBean> blueList=databaseDao.query();
         for (BlueToothBean bt:blueList){
-            modelMotion.setText(bt+"");
+            modelMotion.setText(bt.getMessage());
             modelMotion.setTextSize(18);
         }
         blueList.clear();
